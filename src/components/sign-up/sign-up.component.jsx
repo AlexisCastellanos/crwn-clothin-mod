@@ -21,13 +21,11 @@ class SignUp extends React.Component {
 
   handleSubmit = async event => {
     event.preventDefault();
+
     const { displayName, email, password, confirmPassword } = this.state;
 
     if (password !== confirmPassword) {
-      alert("password don't match");
-      return;
-    }else if(password.length<=5){
-        alert("password  length must be at least 6 caracters long");
+      alert("passwords don't match");
       return;
     }
 
@@ -37,7 +35,7 @@ class SignUp extends React.Component {
         password
       );
 
-      createUserProfileDocument(user, { displayName });
+      await createUserProfileDocument(user, { displayName });
 
       this.setState({
         displayName: "",
@@ -46,12 +44,13 @@ class SignUp extends React.Component {
         confirmPassword: ""
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   handleChange = event => {
     const { name, value } = event.target;
+
     this.setState({ [name]: value });
   };
 
@@ -59,7 +58,7 @@ class SignUp extends React.Component {
     const { displayName, email, password, confirmPassword } = this.state;
     return (
       <div className="sign-up">
-        <h2 className="title">I do not have an account</h2>
+        <h2 className="title">I do not have a account</h2>
         <span>Sign up with your email and password</span>
         <form className="sign-up-form" onSubmit={this.handleSubmit}>
           <FormInput
@@ -75,7 +74,7 @@ class SignUp extends React.Component {
             name="email"
             value={email}
             onChange={this.handleChange}
-            label="email"
+            label="Email"
             required
           />
           <FormInput
@@ -83,7 +82,7 @@ class SignUp extends React.Component {
             name="password"
             value={password}
             onChange={this.handleChange}
-            label="password"
+            label="Password"
             required
           />
           <FormInput
@@ -100,4 +99,5 @@ class SignUp extends React.Component {
     );
   }
 }
+
 export default SignUp;

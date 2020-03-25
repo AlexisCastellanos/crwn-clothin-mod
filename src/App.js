@@ -11,7 +11,7 @@ import Header from "./components/header/header.component";
 import SingInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 import CheckoutPage from "./pages/checkout/checkout.component";
 import emailTest from "./pages/emailTest/emailTest.component";
-import Admin from './pages/admin/admin.component';
+import Admin from "./pages/admin/admin.component";
 
 import {
   auth,
@@ -60,7 +60,7 @@ class App extends React.Component {
             });
           },
           () => {
-            console.log(this.state);
+            // console.log(this.state);
           }
         );
       } else {
@@ -98,8 +98,25 @@ class App extends React.Component {
 
   render() {
     const { setCurrentUser } = this.props;
-    console.log("this.props.currentUser");
+    console.log("this.props.currentUser/");
+    // debugger
+    const admin = { ...this.props.currentUser };
     console.log(this.props.currentUser);
+    console.log("this.state.admin");
+    console.log(admin.admin);
+
+    var aux=null;
+    if(admin.admin==true){
+      aux=false;
+    }else{
+      aux=true;
+    }
+    
+    admin.admin===true  ? (
+      console.log("null....")
+    ) : (
+      console.log("nullxxxxx")
+    )
     return (
       <div>
         {/* <Header currentUser={this.state.currentUser} /> */}
@@ -110,11 +127,11 @@ class App extends React.Component {
           <Route exact path="/checkout" component={CheckoutPage} />
           <Route exact path="/email" component={emailTest} />
           {/*<Route path="/signin" component={SingInAndSignUpPage} />*/}
+
           <Route
             exact
             path="/signin"
-            render={
-              () =>
+            render={() =>
               this.props.currentUser ? (
                 <Redirect to="/" />
               ) : (
@@ -122,17 +139,19 @@ class App extends React.Component {
               )
             }
           />
+
           <Route
             exact
             path="/admin"
             render={() =>
-              setCurrentUser? (
-                <Admin/>
+              admin.admin===true ? (
+                <Redirect to="/" />
               ) : (
-                <Redirect to="/admin" />
+                <Admin />
               )
             }
           />
+          
           <Route path="/hats" component={HatsPage} />
         </Switch>
       </div>
@@ -144,7 +163,6 @@ class App extends React.Component {
 //   currentUser: user.currentUser
 // });
 const mapStateToProps = createStructuredSelector({
-  
   currentUser: selectCurrentUser
 });
 

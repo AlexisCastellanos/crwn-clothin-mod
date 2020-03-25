@@ -12,34 +12,50 @@ import { selectCurrentUser } from "../../redux/user/user.selector";
 import { ReactComponent as Logo } from "../../assets/crown.svg";
 
 import "./header.styles.scss";
+// const admin = { ...this.props.currentUser };
+class Header extends React.Component {
+  // const Header = ({ currentUser, hidden }) => (
+  render() {
+    const admin = { ...this.props.currentUser };
+    console.log("admin");
+    console.log(admin.displayName);
 
-const Header = ({ currentUser, hidden }) => (
-  <div className="header">
-    <Link className="logo-container" to="/">
-      <Logo className="logo" />
-    </Link>
-    <div className="options">
-      <Link className="option" to="/shop">
-        SHOP
-      </Link>
-      <Link className="option" to="/shop">
-        CONTACT
-      </Link>
-      {currentUser ? (
-        <div className="option" onClick={() => auth.signOut()}>
-          SIGN OUT
-        </div>
-      ) : (
-        <Link className="option" to="/signin">
-          SIGN IN
+    return (
+      <div className="header">
+        <Link className="logo-container" to="/">
+          <Logo className="logo" />
         </Link>
-      )}
-      <CartIcon />
-    </div>
-    {hidden ? null : <CartDropdown />}
-  </div>
-);
+        <div className="options">
+        {this.props.currentUser ? (
+          <p style={{padding: '10px 15px'}} >Signed in as, {admin.displayName}</p>
+        ) : (
+          <p>Signed in as a Guest</p>
+        )}
 
+
+          <Link className="option" to="/shop">
+            SHOP
+          </Link>
+          <Link className="option" to="/shop">
+            CONTACT
+          </Link>
+          {this.props.currentUser ? (
+            <div className="option" onClick={() => auth.signOut()}>
+              SIGN OUT
+            </div>
+          ) : (
+            <Link className="option" to="/signin">
+              SIGN IN
+            </Link>
+          )}
+          
+          <CartIcon />
+        </div>
+        {this.props.hidden ? null : <CartDropdown />}
+      </div>
+    );
+  }
+}
 // const mapStateToProps = state => ({
 //   currentUser: state.user.currentUser
 // });

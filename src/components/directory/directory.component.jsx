@@ -1,9 +1,10 @@
 import React from "react";
+import { connect } from "react-redux";
+
 import { withRouter } from "react-router-dom";
 
 import MenuItem from "../../components/menu-item/menu-item.component";
 
-import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
 import { selectDirectorySections } from "../../redux/directory/directory.selectors";

@@ -43,14 +43,7 @@ class App extends React.Component {
 
   componentDidMount() {
     const { setCurrentUser } = this.props;
-    const additionalDatax = {
-      favorites: {
-        food: "Pizza",
-        color: "Blue",
-        subject: "Recess"
-      }
-    };
-
+  
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
@@ -122,15 +115,6 @@ class App extends React.Component {
     console.log("this.state.admin");
     console.log(this.state.access);
 
-    var aux = null;
-    if (admin.admin == true) {
-      aux = false;
-    } else {
-      aux = true;
-    }
-
-    admin.admin === true ? console.log("null....") : console.log("nullxxxxx");
-    
     let adminRoute=null;
     if(this.state.access){
       console.log("xthis.state.access true: "+this.state.access);

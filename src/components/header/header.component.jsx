@@ -13,12 +13,16 @@ import { ReactComponent as Logo } from "../../assets/crown.svg";
 
 import "./header.styles.scss";
 // const admin = { ...this.props.currentUser };
+const testObj = { admin: false };
+
 class Header extends React.Component {
   // const Header = ({ currentUser, hidden }) => (
   render() {
     const admin = { ...this.props.currentUser };
     console.log("admin");
-    console.log(admin.displayName);
+    console.log(admin);
+    console.log("testObj");
+    console.log(testObj);
 
     return (
       <div className="header">
@@ -26,12 +30,20 @@ class Header extends React.Component {
           <Logo className="logo" />
         </Link>
         <div className="options">
-        {this.props.currentUser ? (
-          <p style={{padding: '10px 15px'}} >Signed in as, {admin.displayName}</p>
-        ) : (
-          <p>Signed in as a Guest</p>
-        )}
-
+          {this.props.currentUser ? (
+            <React.Fragment>
+              <p style={{ padding: "10px 15px" }}>
+                Signed in as, {admin.displayName}
+              </p>
+              {this.props.currentUser.admin ? (
+                <Link className="option" to="/admin">
+                  ADMIN
+                </Link>
+              ) : null}
+            </React.Fragment>
+          ) : (
+            <p>Signed in as a Guest</p>
+          )}
 
           <Link className="option" to="/shop">
             SHOP
@@ -48,7 +60,7 @@ class Header extends React.Component {
               SIGN IN
             </Link>
           )}
-          
+
           <CartIcon />
         </div>
         {this.props.hidden ? null : <CartDropdown />}

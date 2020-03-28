@@ -35,6 +35,9 @@ class App extends React.Component {
   //     currentUser: null
   //   };
   // }
+  state = {
+    access: false
+  };
   unsubscribeFromAuth = null;
   unsubscribeFromAuth2 = null;
 
@@ -51,6 +54,19 @@ class App extends React.Component {
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
+
+        userRef.onSnapshot(
+          snapShot => {
+            console.log("snapShot.data()");
+            console.log(snapShot.data().admin);
+            this.setState({
+              access: snapShot.data().admin
+            });
+          },
+          () => {
+            // console.log(this.state);
+          }
+        );
 
         userRef.onSnapshot(
           snapShot => {
@@ -98,25 +114,30 @@ class App extends React.Component {
 
   render() {
     const { setCurrentUser } = this.props;
+    
     console.log("this.props.currentUser/");
     // debugger
-    const admin = { ...this.props.currentUser };
+    const admin = { ...this.state.access };
     console.log(this.props.currentUser);
     console.log("this.state.admin");
-    console.log(admin.admin);
+    console.log(this.state.access);
 
-    var aux=null;
-    if(admin.admin==true){
-      aux=false;
-    }else{
-      aux=true;
+    var aux = null;
+    if (admin.admin == true) {
+      aux = false;
+    } else {
+      aux = true;
     }
+
+    admin.admin === true ? console.log("null....") : console.log("nullxxxxx");
     
-    admin.admin===true  ? (
-      console.log("null....")
-    ) : (
-      console.log("nullxxxxx")
-    )
+    let adminRoute=null;
+    if(this.state.access){
+      console.log("xthis.state.access true: "+this.state.access);
+      adminRoute=<Route exact path="/admin" component={Admin} />
+    }else{
+      console.log("xthis.state.access false: "+this.state.access);
+    }
     return (
       <div>
         {/* <Header currentUser={this.state.currentUser} /> */}
@@ -139,19 +160,19 @@ class App extends React.Component {
               )
             }
           />
-
+          {adminRoute}
+          {/*
           <Route
             exact
             path="/admin"
-            render={() =>
-              admin.admin===true ? (
-                <Redirect to="/" />
-              ) : (
-                <Admin />
-              )
+            render={
+              () =>
+              //this.state.access=== true ? <Admin />  : <Redirect to="/" />
+              // this.state.access=== true ? console.log("rendertruex"): console.log("renderfalsx")
+              this.state.access=== false ? <Redirect to="/" /> : <Admin />
             }
           />
-          
+          */}
           <Route path="/hats" component={HatsPage} />
         </Switch>
       </div>

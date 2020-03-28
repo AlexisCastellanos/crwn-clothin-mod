@@ -21,7 +21,8 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
 
   const snapShot = await userRef.get();
 
-  // console.log(snapShot);
+  console.log("snapShotsnapShot");
+  console.log(snapShot);
 
   if (!snapShot.exists) {
     const { displayName, email } = userAuth;
@@ -40,6 +41,8 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
       console.log('error catching user', error.message);
     }
   }
+  console.log("userRefuserRef");
+  console.log(userRef);
   return userRef;
 
 }

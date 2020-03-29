@@ -18,8 +18,11 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) return;
 
   const userRef = firestore.doc(`users/${userAuth.uid}`);
-
   const snapShot = await userRef.get();
+
+  const collectionRef = firestore.collection('users');
+  const collectionSnapshot = await collectionRef.get();
+  console.log({ collection: collectionSnapshot.docs.map(doc => doc.data()) });
 
   console.log("snapShotsnapShot");
   console.log(snapShot);
@@ -47,60 +50,7 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
 
 }
 
-export const createUserProfileDocument2 = async (userAuth, additionalData) => {
-  if (!userAuth) return;
 
-  const userRef = firestore.doc(`orders/${userAuth.uid}`);
-
-  const snapShot = await userRef.get();
-
-  // console.log(snapShot);
-
-  if (!snapShot.exists) {
-    const { displayName, email } = userAuth;
-    const createdAt = new Date();
-
-    try {
-      await userRef.set({
-        displayName,
-        email,
-        createdAt,
-        ...additionalData
-      })
-    } catch (error) {
-      console.log('error catching user', error.message);
-    }
-  }
-
-
-
-
-  const userRef2 = firestore.doc(`orders/${userAuth.uid}`);
-
-  const snapShot2 = await userRef2.get();
-
-  // console.log(snapShot);
-
-  if (!snapShot2.exists) {
-    const { displayName, email } = userAuth;
-    const createdAt = new Date();
-    const admin = false;
-
-    try {
-      await userRef2.set({
-        displayName,
-        email,
-        createdAt,
-        admin,
-        ...additionalData
-      })
-    } catch (error) {
-      console.log('error catching user', error.message);
-    }
-  }
-  return userRef;
-
-}
 var docData = {
   stringExample: "Hello world!",
   booleanExample: true,
@@ -119,7 +69,7 @@ export const dummy = (currentUser, items, total) => {
   const createdAt = new Date();
   console.log(currentUser);
   var docData = {
-    currentUserID:currentUser.id,
+    currentUserID: currentUser.id,
     items: items,
     total: total,
     date: createdAt,
@@ -151,6 +101,52 @@ export const dummy = (currentUser, items, total) => {
       console.error("Error writing document:  -> PENDINGS", error);
     });
 }
+
+
+export const getOrdersFromFirebase = () => {
+  let data = null;
+  // const userRef=firestore.collection("pendings");
+  // const snapShot=await userRef.get();
+
+
+  // console.log("getOrdersFromFirebaseasync");
+  // console.log(userRef);
+  // console.log(snapShot);
+
+  firestore.collection("pendings").get().then(function (querySnapshot) {
+    console.log("pendings");
+
+    querySnapshot.forEach(function (doc) {
+      // doc.data() is never undefined for query doc snapshots
+      //console.log(doc.id, " => ", doc.data());
+      data = doc.data()
+    });
+
+  });
+  return docData
+}
+
+export const convertCollectionsSnapShotToMap = (collections) => {
+  const transformedCollection = collections.docs.map(
+    doc => {
+      const { personal, items } = doc.data();
+
+      return {
+        routeName: personal,
+        id: doc.id,
+        personal,
+        items,
+      };
+
+    });
+  // console.log(transformedCollection);
+  return transformedCollection;
+
+  // return transformedCollection.reduce((accumulator,collection)=>{
+  //   accumulator[collection.personal]=collection;
+  //   return accumulator;
+  // },{});
+};
 
 export const dummy2 = () => {
   console.log("send 2 Firbase Database");

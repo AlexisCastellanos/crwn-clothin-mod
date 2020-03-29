@@ -133,12 +133,10 @@ export const dummy = (currentUser, items, total) => {
     },
     phone1: "123-123-1233",
     phone2: "321-321-321",
-
   };
   firestore.collection("orders").doc(`${currentUser.id}`).collection("boughts").doc(`${createdAt}`).set(docData).then(function () {
     console.log("Document successfully written!");
   });
-
 }
 
 

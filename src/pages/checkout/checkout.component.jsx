@@ -26,7 +26,7 @@ class CheckoutPage extends React.Component {
   hideModal = () => {
     this.setState({ show: false });
   };
-  sendToFirebse = () => {
+  send2Firebase = () => {
     // this.setState({ show: false });
     console.log("send 2 Firbase Database");
     dummy(this.props.currentUser, this.props.cartItems, this.props.total);
@@ -35,12 +35,12 @@ class CheckoutPage extends React.Component {
   componentDidMount() {}
 
   render() {
-    const Modal = ({ handleClose, show, children, handleTest }) => {
+    const Modal = ({ handleClose, show, children, handle2Firebase }) => {
       const showHideClassName = show
         ? "modal display-block"
         : "modal display-none";
       const buttonAccount = user => (
-        <button className="custom-button" onClick={handleTest}>
+        <button className="custom-button" onClick={handle2Firebase}>
           Yes, Proceed
         </button>
       );
@@ -56,12 +56,10 @@ class CheckoutPage extends React.Component {
           </React.Fragment>
         );
       };
-
       return (
         <div className={showHideClassName}>
           <section className="modal-main">
             {children}
-
             <div
               style={{
                 display: "flex",
@@ -122,7 +120,7 @@ class CheckoutPage extends React.Component {
           <Modal
             show={this.state.show}
             handleClose={this.hideModal}
-            handleTest={this.sendToFirebse}
+            handle2Firebase={this.send2Firebase}
           >
             <div style={{ textAlign: "center" }}>
               <h1>Confirmation</h1>

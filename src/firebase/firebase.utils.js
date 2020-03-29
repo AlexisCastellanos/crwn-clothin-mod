@@ -119,24 +119,41 @@ export const dummy = (currentUser, items, total) => {
   const createdAt = new Date();
   console.log(currentUser);
   var docData = {
+    currentUserID:currentUser.id,
     items: items,
     total: total,
     date: createdAt,
     name: "name 1",
-    address: {
-      street: "street add",
-      city: "city name",
-      code: "123",
-      state: "state name",
-      country: "country name",
-      ref: "referances"
+    personal: {
+      address: {
+        street: "street add",
+        city: "city name",
+        code: "123",
+        state: "state name",
+        country: "country name",
+        ref: "referances",
+        phone1: "123-123-1233",
+        phone2: "321-321-321",
+      },
     },
-    phone1: "123-123-1233",
-    phone2: "321-321-321",
   };
   firestore.collection("orders").doc(`${currentUser.id}`).collection("boughts").doc(`${createdAt}`).set(docData).then(function () {
-    console.log("Document successfully written!");
-  });
+    console.log("Document successfully written! -> ORDERS");
+  })
+    .catch(function (error) {
+      console.error("Error writing document  -> ORDERS: ", error);
+    });
+
+  firestore.collection("pendings").doc(`${createdAt}`).set(docData).then(function () {
+    console.log("Document successfully written! -> PENDINGS");
+  })
+    .catch(function (error) {
+      console.error("Error writing document:  -> PENDINGS", error);
+    });
+}
+
+export const dummy2 = () => {
+  console.log("send 2 Firbase Database");
 }
 
 

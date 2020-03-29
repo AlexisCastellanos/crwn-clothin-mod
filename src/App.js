@@ -118,7 +118,7 @@ class App extends React.Component {
     let adminRoute=null;
     if(this.state.access){
       console.log("xthis.state.access true: "+this.state.access);
-      adminRoute=<Route exact path="/admin" component={Admin} />
+      adminRoute=<Route exact path="/admin" adminAccess={this.state.access} component={Admin} />
     }else{
       console.log("xthis.state.access false: "+this.state.access);
     }

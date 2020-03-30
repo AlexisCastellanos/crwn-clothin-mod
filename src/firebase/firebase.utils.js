@@ -129,13 +129,14 @@ export const getOrdersFromFirebase = () => {
 export const convertCollectionsSnapShotToMap = (collections) => {
   const transformedCollection = collections.docs.map(
     doc => {
-      const { personal, items } = doc.data();
+      const { personal, items,currentUserID,total } = doc.data();
 
       return {
-        routeName: personal,
+        currentUserID: currentUserID,
         id: doc.id,
         personal,
         items,
+        total
       };
 
     });

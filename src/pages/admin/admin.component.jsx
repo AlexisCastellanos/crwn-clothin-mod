@@ -15,7 +15,9 @@ class Admin extends React.Component {
 
   state = {
     isdata: false,
-    data: null
+    order: null,
+    collectionOrder: null,
+    show: false
   };
 
   getOrders = () => {
@@ -24,14 +26,26 @@ class Admin extends React.Component {
     collectionRef.onSnapshot(async snapshot => {
       console.log("collectionRef");
       console.log(snapshot);
-      const ddata=convertCollectionsSnapShotToMap(snapshot);
-      console.log(ddata);
-      console.log(ddata[0].id);
-      let obj=[ddata];
-      console.log(obj);
+      const collectionOrder = convertCollectionsSnapShotToMap(snapshot);
+
+      var order = collectionOrder.reduce(function(acc, cur, i) {
+        acc[i] = cur;
+        return acc;
+      }, {});
+      let ddata = { ...[collectionOrder] };
+      console.log("collectionOrder[0]");
+      console.log(collectionOrder[0]);
+      console.log("order[0]");
+      console.log(order[0]);
+
+      const test = [...ddata[0]];
+      console.log("test.map(item => console.log(item.id))");
+      test.map(item => console.log(item.id));
       this.setState({
-        data:ddata[0].id+ddata[1].id
-      })
+        collectionOrder,
+        order: test,
+        show: true
+      });
     });
     console.log("this.state");
     console.log(this.state);
@@ -43,13 +57,52 @@ class Admin extends React.Component {
 
   render() {
     let orders = null;
+
     if (this.props.currentUser) {
       console.log("I'm a user");
       if (this.props.currentUser.admin) {
         console.log("I'm an Admin");
-        orders = <p>{this.state.data}</p>;
+        if (this.state.show == false) {
+          orders = <p></p>;
+        } else {
+          console.log("this.state.order");
+          console.log(this.state.order[0].id);
+          console.log("this.state.order");
+
+          this.state.order.map(item => console.log(item.id));
+          // orders = <p>{this.state.order[0].id}</p>;
+          orders = (
+            <div>
+              {this.state.order.map(item => (
+                <React.Fragment key={item.currentUser + "" + item.id}>
+                  <p
+                    style={{ justifyContent: "space-evenly", display: "flex" }}
+                    key={item.currentUser + "" + item.id}
+                  >
+                    {item.id +
+                      " / " +
+                      item.currentUserID +
+                      " / " +
+                      item.personal.address.phone1 +
+                      " / " +
+                      item.personal.address.phone2}
+
+                    <p
+                      // style={{ justifyContent: "space-evenly", display: "flex" }}
+                      key={item.currentUser + "" + item.id}
+                    >
+                      {"$" + item.total}
+                    </p>
+                    <button key={item.currentUser + "" + item.id}>
+                      Show Items
+                    </button>
+                  </p>
+                </React.Fragment>
+              ))}
+            </div>
+          );
+        }
       } else {
-        console.log("I'm not an Admin");
         orders = <p>Im NOT an admin</p>;
       }
     } else {
@@ -58,9 +111,7 @@ class Admin extends React.Component {
 
     return (
       <div className=".admin-page">
-        Admin
-        <button onClick={this.getOrders}>Pedidos</button>
-        <button onClick={this.getOrders2}>Pedidos</button>
+        <button onClick={this.getOrders}>Show Pending Orders</button>
         {orders}
       </div>
     );

@@ -97,6 +97,11 @@ export const dummy = (currentUser, items, total) => {
   firestore.collection("pendings").doc(`${createdAt}`).set(docData).then(function () {
     console.log("Document successfully written! -> PENDINGS");
   })
+  firestore.collection("pendingsx").add({
+    docData
+  }).then(function () {
+    console.log("Document successfully written! -> PENDINGSXXX");
+  })
     .catch(function (error) {
       console.error("Error writing document:  -> PENDINGS", error);
     });
@@ -126,12 +131,37 @@ export const getOrdersFromFirebase = () => {
   return docData
 }
 
-export const convertCollectionsSnapShotToMap = (collections) => {
+export const convertCollectionsSnapShotToMap = (collections,filt) => {
   const transformedCollection = collections.docs.map(
     doc => {
-      const { personal, items,currentUserID,total } = doc.data();
+      const { personal, items, currentUserID, total } = doc.data();
+      console.log("doc.data()");
+      console.log(doc.data());
+      return {
+        currentUserID: currentUserID,
+        id: doc.id,
+        personal,
+        items,
+        total
+      };
+
+    });
+  // console.log(transformedCollection);
+  return transformedCollection;
+
+  // return transformedCollection.reduce((accumulator,collection)=>{
+  //   accumulator[collection.personal]=collection;
+  //   return accumulator;
+  // },{});
+};
+
+export const convertCollectionsSnapShotToMap2 = (collections) => {
+  const transformedCollection = collections.docs.map(
+    doc => {
+      const { personal, items, currentUserID, total } = doc.data();
 
       return {
+        // routeName:encodeURI(doc.id.toLowerCase()),
         currentUserID: currentUserID,
         id: doc.id,
         personal,

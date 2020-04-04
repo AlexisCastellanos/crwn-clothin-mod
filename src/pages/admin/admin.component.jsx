@@ -5,33 +5,74 @@ import { createStructuredSelector } from "reselect";
 import { selectUser, selectCurrentUser } from "../../redux/user/user.selector";
 import {
   firestore,
-  convertCollectionsSnapShotToMap
+  convertCollectionsSnapShotToMap,
+  convertCollectionsSnapShotToMap2
 } from "../../firebase/firebase.utils";
 
 import "./admin.styles.scss";
 
 class Admin extends React.Component {
   unsubscribeFromSnapshot = null;
+  constructor(props) {
+    super(props);
 
-  state = {
-    isdata: false,
-    order: null,
-    collectionOrder: null,
-    show: false
-  };
+    this.state = {
+      isdata: false,
+      order: null,
+      collectionOrder: null,
+      show: false,
+      next: false,
+      last: {},
+      pendings: []
+    };
+
+    this.getFirstX = this.getFirstX.bind(this);
+    this.getNextX = this.getNextX.bind(this);
+  }
+
+  // state = {
+  //   isdata: false,
+  //   order: null,
+  //   collectionOrder: null,
+  //   show: false,
+  //   next: false,
+  //   last: {},
+  //   cities:[],
+  // };
 
   getOrders = () => {
-    const collectionRef = firestore.collection("pendings");
+    firestore
+      .collection("pendings")
+      .doc("Sat Apr 04 2020 11:58:29 GMT-0600 (Central Standard Time)")
+      .get()
+      .then(doc => {
+        console.log("zxzxzx");
+        console.log(doc.data());
+        console.log("zxzx");
+      });
+
+    const collectionRef = firestore
+      .collection("pendings")
+      .orderBy("date", "asc");
 
     collectionRef.onSnapshot(async snapshot => {
       console.log("collectionRef");
       console.log(snapshot);
-      const collectionOrder = convertCollectionsSnapShotToMap(snapshot);
+      console.log("collectionRefdocs");
+      console.log(snapshot.docs);
+      console.log("collectionRef.legth");
+      console.log(snapshot.docs.length);
+
+      const collectionOrder = convertCollectionsSnapShotToMap(
+        snapshot,
+        "DvzGCKufptO4JPtaNw64SI6f8Bd2"
+      );
 
       var order = collectionOrder.reduce(function(acc, cur, i) {
         acc[i] = cur;
         return acc;
       }, {});
+
       let ddata = { ...[collectionOrder] };
       console.log("collectionOrder[0]");
       console.log(collectionOrder[0]);
@@ -51,9 +92,94 @@ class Admin extends React.Component {
     console.log(this.state);
   };
 
-  getOrders2 = () => {
+  getStatus = () => {
     console.log(this.state);
+    console.log(this.state.last);
   };
+
+  async getFirstX() {
+    var cities = [];
+    var lastVisibleCitySnapShot = {};
+    var first = firestore.collection("pendings").orderBy("date", "asc");
+
+    const query = await first.limit(3);
+    query.get().then(snap => {
+      snap.forEach(doc => {
+        const { personal, items, currentUserID, total } = doc.data();
+        console.log("doc.data()");
+        console.log(doc.data());
+        cities.push({
+          currentUserID: currentUserID,
+          id: doc.id,
+          personal,
+          items,
+          total
+        });
+
+        // cities.push(doc.data());
+        console.log({
+          currentUserID: currentUserID,
+          id: doc.id,
+          personal,
+          items,
+          total
+        });
+        console.log(doc.data());
+        console.log(doc.id);
+        console.log(cities);
+      });
+      lastVisibleCitySnapShot = snap.docs[snap.docs.length - 1];
+      console.log(lastVisibleCitySnapShot);
+      this.setState({
+        last: lastVisibleCitySnapShot,
+        order: cities,
+        show: true
+      });
+    });
+  }
+  async getNextX() {
+    var cities = [];
+    var lastVisibleCitySnapShot = {};
+
+    const query = await firestore
+      .collection("pendings")
+      .orderBy("date", "asc")
+      .startAfter(this.state.last)
+      .limit(3);
+
+    query.get().then(snap => {
+      snap.forEach(doc => {
+        const { personal, items, currentUserID, total } = doc.data();
+        console.log("doc.data()");
+        console.log(doc.data());
+        cities.push({
+          currentUserID: currentUserID,
+          id: doc.id,
+          personal,
+          items,
+          total
+        });
+
+        // cities.push(doc.data());
+        console.log({
+          currentUserID: currentUserID,
+          id: doc.id,
+          personal,
+          items,
+          total
+        });
+        console.log(doc.data());
+        console.log(cities);
+      });
+      lastVisibleCitySnapShot = snap.docs[snap.docs.length - 1];
+      console.log(lastVisibleCitySnapShot);
+      this.setState({
+        last: lastVisibleCitySnapShot,
+        order: cities,
+        show: true
+      });
+    });
+  }
 
   render() {
     let orders = null;
@@ -88,14 +214,11 @@ class Admin extends React.Component {
                       item.personal.address.phone2}
 
                     <p
-                      // style={{ justifyContent: "space-evenly", display: "flex" }}
-                      key={item.currentUser + "" + item.id}
+                    // style={{ justifyContent: "space-evenly", display: "flex" }}
                     >
                       {"$" + item.total}
                     </p>
-                    <button key={item.currentUser + "" + item.id}>
-                      Show Items
-                    </button>
+                    <button>Show Items</button>
                   </p>
                 </React.Fragment>
               ))}
@@ -112,6 +235,9 @@ class Admin extends React.Component {
     return (
       <div className=".admin-page">
         <button onClick={this.getOrders}>Show Pending Orders</button>
+        <button onClick={this.getStatus}>status</button>
+        <button onClick={this.getFirstX}>First</button>
+        <button onClick={this.getNextX}>Next</button>
         {orders}
       </div>
     );

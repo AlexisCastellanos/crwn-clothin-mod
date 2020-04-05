@@ -13,6 +13,7 @@ import "./admin.styles.scss";
 
 class Admin extends React.Component {
   unsubscribeFromSnapshot = null;
+  cities=[];
   constructor(props) {
     super(props);
 
@@ -23,11 +24,14 @@ class Admin extends React.Component {
       show: false,
       next: false,
       last: {},
-      pendings: []
+      pendings: [],
+      limit:3,
+      arrayPend:null
     };
 
     this.getFirstX = this.getFirstX.bind(this);
     this.getNextX = this.getNextX.bind(this);
+    this.getPrevX = this.getPrevX.bind(this);
   }
 
   // state = {
@@ -98,23 +102,31 @@ class Admin extends React.Component {
   };
 
   async getFirstX() {
-    var cities = [];
+    console.log("this.state.order.length");
+    console.log(this.state.order);
+    // var cities = [];
     var lastVisibleCitySnapShot = {};
     var first = firestore.collection("pendings").orderBy("date", "asc");
 
-    const query = await first.limit(3);
+    const query = await first.limit(this.state.limit);
     query.get().then(snap => {
       snap.forEach(doc => {
         const { personal, items, currentUserID, total } = doc.data();
         console.log("doc.data()");
         console.log(doc.data());
-        cities.push({
+        var itm={
           currentUserID: currentUserID,
           id: doc.id,
           personal,
           items,
           total
-        });
+        };
+
+        this.cities.push(itm);
+        
+        this.setState(prevState => ({
+          arrayPend: {...prevState.arrayPend, itm}
+        }))
 
         // cities.push(doc.data());
         console.log({
@@ -126,26 +138,88 @@ class Admin extends React.Component {
         });
         console.log(doc.data());
         console.log(doc.id);
-        console.log(cities);
+        console.log("this.cities1");
+        console.log(this.cities);
       });
       lastVisibleCitySnapShot = snap.docs[snap.docs.length - 1];
       console.log(lastVisibleCitySnapShot);
       this.setState({
         last: lastVisibleCitySnapShot,
-        order: cities,
-        show: true
+        order: this.cities,
+        show: true,
+        // arrayPend:{...this.state.arrayPend, cities}
       });
+      // var joined = {...this.state.arrayPend,...cities}
+      // this.setState({ arrayPend: joined })
     });
   }
+
+
   async getNextX() {
-    var cities = [];
+    console.log('this.state.order.length');
+    console.log(this.state.order.length);
+    if(this.state.order.length!=3){
+      return
+    }
+    // var cities = [];
     var lastVisibleCitySnapShot = {};
 
     const query = await firestore
       .collection("pendings")
       .orderBy("date", "asc")
       .startAfter(this.state.last)
-      .limit(3);
+      .limit(this.state.limit);
+
+    query.get().then(snap => {
+      snap.forEach(doc => {
+        const { personal, items, currentUserID, total } = doc.data();
+        console.log("doc.data()");
+        console.log(doc.data());
+        var itm={
+          currentUserID: currentUserID,
+          id: doc.id,
+          personal,
+          items,
+          total
+        };
+
+        this.cities.push(itm);
+        
+        this.setState(prevState => ({
+          arrayPend: {...prevState.arrayPend, itm}
+        }))
+
+        // cities.push(doc.data());
+        console.log({
+          currentUserID: currentUserID,
+          id: doc.id,
+          personal,
+          items,
+          total
+        });
+        console.log(doc.data());
+        console.log(this.cities);
+      });
+      lastVisibleCitySnapShot = snap.docs[snap.docs.length - 1];
+      console.log(lastVisibleCitySnapShot);
+      this.setState({
+        last: lastVisibleCitySnapShot,
+        order: this.cities,
+        show: true,
+        // arrayPend:{...this.state.arrayPend, cities}
+      });
+    });
+  }
+
+  async getPrevX() {
+    var cities = [];
+    var lastVisibleCitySnapShot = {};
+
+    const query = await firestore
+      .collection("pendings")
+      .orderBy("date", "asc")
+      .endBefore(this.state.last)
+      .limit(this.state.limit);
 
     query.get().then(snap => {
       snap.forEach(doc => {
@@ -176,7 +250,8 @@ class Admin extends React.Component {
       this.setState({
         last: lastVisibleCitySnapShot,
         order: cities,
-        show: true
+        show: true,
+        
       });
     });
   }
@@ -238,6 +313,7 @@ class Admin extends React.Component {
         <button onClick={this.getStatus}>status</button>
         <button onClick={this.getFirstX}>First</button>
         <button onClick={this.getNextX}>Next</button>
+        <button onClick={this.getPrevX}>Prev</button>
         {orders}
       </div>
     );
